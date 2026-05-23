@@ -6,6 +6,7 @@ from typing import List
 
 class JobApplicationState:
     current_app: Literal["Linkedin", "Naukri", "Indeed"]
+    all_apps: List[str] = ["Linkedin", "Naukri", "Indeed"]
     all_jobs: List[Job]
     filtered_jobs: List[Job]
     profile: Profile
