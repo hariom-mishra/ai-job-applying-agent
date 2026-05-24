@@ -30,40 +30,63 @@ def job_fetcher_agent(state: JobApplicationState):
     location = state.profile.location
     jobs = []
 
+    if not _is_cdp_running():
+        print("CDP not active — launching Chrome with a dedicated agent profile...")
+        try:
+            profile_dir = "/Users/hariommishra/Desktop/dev/ai/ai-job-application-agent/chrome_profile"
+            subprocess.Popen([
+                "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                "--remote-debugging-port=9222",
+                f"--user-data-dir={profile_dir}"
+            ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception as e:
+            print(f"Failed to start Chrome via subprocess: {e}")
+
+        # Wait and poll for up to 8 seconds
+        cdp_ready = False
+        for i in range(8):
+            print(f"Checking if Chrome CDP is ready (attempt {i+1}/8)...")
+            time.sleep(1)
+            if _is_cdp_running():
+                cdp_ready = True
+                break
+
+        if not cdp_ready:
+            print("\n❌ Failed to connect to the Chrome agent profile.")
+            print("👉 Please verify that a new Chrome window opened, or start it manually using:")
+            print("   /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=\"/Users/hariommishra/Desktop/dev/ai/ai-job-application-agent/chrome_profile\"\n")
+            return {"all_jobs": []}
+
     with sync_playwright() as p:
-        if _is_cdp_running():
-            print(f"Connecting to your running Chrome profile over CDP ({CDP_URL})...")
-            browser = p.chromium.connect_over_cdp(CDP_URL)
-            context = browser.contexts[0]
+        print(f"Connecting to your running Chrome profile over CDP ({CDP_URL})...")
+        browser = p.chromium.connect_over_cdp(CDP_URL)
+        context = browser.contexts[0]
 
-            # Reuse existing LinkedIn tab if open
-            page = None
-            for tab in context.pages:
-                if "linkedin" in tab.url:
-                    page = tab
-                    print("Found an already active LinkedIn tab — attaching to it.")
-                    break
+        # Reuse existing LinkedIn tab if open
+        page = None
+        is_new_page = False
+        for tab in context.pages:
+            if "linkedin" in tab.url:
+                page = tab
+                print("Found an already active LinkedIn tab — attaching to it.")
+                break
 
-            if not page:
-                page = context.new_page()
-                print("Opened a new tab.")
-        else:
-            print("CDP not active — launching a headful Playwright browser to run the scraper...")
-            browser = p.chromium.launch(headless=False)
-            context = browser.new_context()
+        if not page:
             page = context.new_page()
-            print("Opened a new headful browser.")
+            is_new_page = True
+            print("Opened a new tab.")
 
         try:
             cards = scrape_job_listings(page, role, location)
         except Exception as e:
             print(f"LinkedIn scraping failed: {e}")
-            page.close()
+            if is_new_page:
+                page.close()
             return {"all_jobs": []}
 
         if not cards:
-            print("No job cards found — LinkedIn may have shown a login wall.")
-            page.close()
+            if is_new_page:
+                page.close()
             return {"all_jobs": []}
 
         for card in cards:
@@ -77,6 +100,7 @@ def job_fetcher_agent(state: JobApplicationState):
                     location=card["location"],
                     description=description,
                 )
+                job.url = card.get("url")
             except Exception as e:
                 print(f"LLM extraction failed for job {card['id']}: {e}")
                 job = Job(
@@ -85,12 +109,14 @@ def job_fetcher_agent(state: JobApplicationState):
                     company_name=card["company_name"],
                     location=card["location"],
                     job_description=description,
+                    url=card.get("url")
                 )
 
             jobs.append(job)
             print(f"  fetched: {job.title} @ {job.company_name}")
 
-        page.close()
+        if is_new_page:
+            page.close()
 
     print(f"fetched {len(jobs)} jobs from LinkedIn.")
     return {"all_jobs": jobs}

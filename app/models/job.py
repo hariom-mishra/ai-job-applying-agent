@@ -12,4 +12,5 @@ class Job(BaseModel):
     responsibilities: Optional[str] = None
     salery: Optional[str] = None
     job_type: Optional[str] = None
+    url: Optional[str] = None
     

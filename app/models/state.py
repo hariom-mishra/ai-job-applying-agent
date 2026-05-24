@@ -6,6 +6,7 @@ from typing import List
 
 class JobApplicationState(BaseModel):
     all_jobs: List[Job] = Field(default_factory=list)
+    filtered_jobs: List[Job] = Field(default_factory=list)
     processed_jobs: List[Job] = Field(default_factory=list)
     profile: Profile
     applied_jobs: List[str] = Field(default_factory=list)

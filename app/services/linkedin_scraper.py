@@ -59,7 +59,7 @@ def scrape_job_listings(
     # whichever appears first tells us which version of the page we have.
     page.wait_for_selector(
         # logged-in page selectors
-        ".jobs-search-results__list-item, .job-card-container,"
+        ".scaffold-layout__list-item, .jobs-search-results__list-item, .job-card-container,"
         # public (logged-out) page selectors as fallback
         ".base-search-card, .jobs-search__results-list",
         timeout=15000,
@@ -72,10 +72,15 @@ def scrape_job_listings(
 
     soup = BeautifulSoup(page.content(), "html.parser")
 
-    # Try logged-in selectors first, then fall back to public page selectors.
-    cards = soup.select("li.jobs-search-results__list-item")[:max_jobs]
+    # Try multiple card selectors (ordered by preference)
+    cards = soup.select(".scaffold-layout__list-item")
     if not cards:
-        cards = soup.select(".job-search-card")[:max_jobs]
+        cards = soup.select("li.jobs-search-results__list-item")
+    if not cards:
+        cards = soup.select(".job-card-container")
+    if not cards:
+        cards = soup.select(".job-search-card")
+    cards = cards[:max_jobs]
 
     results = []
     for i, card in enumerate(cards):
@@ -88,6 +93,7 @@ def scrape_job_listings(
             # logged-in selectors
             card.select_one("a.job-card-list__title--link"),
             card.select_one("a.job-card-container__link"),
+            card.select_one("a[href*='/jobs/view/']"),
             # public page fallback
             card.select_one("a.base-card__full-link"),
         )
@@ -104,6 +110,7 @@ def scrape_job_listings(
             card.select_one("a.job-card-list__title--link strong"),
             card.select_one("a.job-card-list__title--link"),
             card.select_one(".job-card-list__title"),
+            card.select_one("a[href*='/jobs/view/']"),
             # public page fallback
             card.select_one(".base-search-card__title"),
         )
@@ -144,8 +151,10 @@ def scrape_job_description(page: Page, job_url: str) -> str:
         # Wait for the description container — different class on logged-in vs public page.
         page.wait_for_selector(
             # logged-in
+            "#job-details,"
             ".jobs-description-content__text,"
             ".jobs-description__content,"
+            ".jobs-box__html-content,"
             # public page fallback
             ".show-more-less-html__markup,"
             ".description__text",
@@ -156,8 +165,10 @@ def scrape_job_description(page: Page, job_url: str) -> str:
 
         desc_el = _first(
             # logged-in selectors
+            soup.select_one("#job-details"),
             soup.select_one(".jobs-description-content__text"),
             soup.select_one(".jobs-description__content"),
+            soup.select_one(".jobs-box__html-content"),
             # public page fallback
             soup.select_one(".show-more-less-html__markup"),
             soup.select_one(".description__text"),

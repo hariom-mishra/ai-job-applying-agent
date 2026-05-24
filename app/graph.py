@@ -29,7 +29,7 @@ graph.add_conditional_edges(
     monitor_agent,
     {
         "done": END,
-        "continue": "filter"
+        "continue": "applier"
     }
 )
 
