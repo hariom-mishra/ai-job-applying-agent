@@ -1,6 +1,6 @@
 from langchain_core.prompts import ChatPromptTemplate
 
-from app.lllm import llm
+from app.llm import llm
 from app.models.job import Job
 
 _prompt = ChatPromptTemplate.from_messages([
