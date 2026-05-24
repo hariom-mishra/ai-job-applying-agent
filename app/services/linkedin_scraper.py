@@ -16,11 +16,10 @@ from playwright.sync_api import Page
 
 
 def build_search_url(role: str, location: str) -> str:
-    # `quote()` URL-encodes special characters so spaces become %20, etc.
-    # Without this, a role like "Software Engineer" would break the URL.
+    # f_AL=true filters for LinkedIn Easy Apply jobs only
     return (
         f"https://www.linkedin.com/jobs/search/"
-        f"?keywords={quote(role)}&location={quote(location)}"
+        f"?keywords={quote(role)}&location={quote(location)}&f_AL=true"
     )
 
 
