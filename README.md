@@ -240,8 +240,3 @@ Key constants you may want to adjust:
 - **Session dependency** — Requires an active LinkedIn session in the connected Chrome instance.
 - **macOS only** — The Chrome launch command is macOS-specific; adjust the path for Linux/Windows.
 
----
-
-## License
-
-MIT
