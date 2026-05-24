@@ -36,7 +36,7 @@ def main():
                 location="San Francisco, CA"
             ),
             all_jobs=[],
-            filtered_jobs=[],
+            processed_jobs=[],
             applied_jobs=[],
             resume="Resume text"
         )
