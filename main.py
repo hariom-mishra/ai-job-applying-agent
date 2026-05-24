@@ -8,7 +8,7 @@ def main():
             profile=Profile(
                 name="Hariom Mishra",
                 email="mhariom014@gmail.com",
-                phone="7483654620",
+                phone="1234567890",
                 role="AI Engineer",
                 key_skills=["Python","FastAPI", "Langgraph","Langchain","RAG","Agentic AI","LLMs"],
                 experiences=[
