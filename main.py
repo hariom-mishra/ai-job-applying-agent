@@ -6,26 +6,39 @@ def main():
     job_graph.invoke(
         JobApplicationState(
             profile=Profile(
-                name="John Doe",
-                email="[EMAIL_ADDRESS]",
-                phone="1234567890",
-                role="Software Engineer",
-                key_skills=["Python", "Java", "SQL"],
-                experiences=[{
-                    "company": "Google",
+                name="Hariom Mishra",
+                email="mhariom014@gmail.com",
+                phone="7483654620",
+                role="AI Engineer",
+                key_skills=["Python","FastAPI", "Langgraph","Langchain","RAG","Agentic AI","LLMs"],
+                experiences=[
+                    {
+                        "company": "Junkies Coders",
+                        "role": "Software Engineer",
+                        "duration": "6 months",
+                        "description": "Working on mobile apps"
+                    },
+                    {
+                    "company": "Zulu Club",
                     "role": "Software Engineer",
                     "duration": "2 years",
-                    "description": "Working on AI projects"
+                    "description": "Working on Mobile Apps and  AI projects"
                 }],
                 education=[{
-                    "degree": "Bachelor of Science",
+                    "degree": "Master of Computer Application",
                     "field": "Computer Science",
-                    "year": 2022
-                }],
+                    "year": 2023
+                },
+                {
+                    "degree": "Bachelor of Computer Application",
+                    "field": "Computer Science",
+                    "year": 2020
+                },
+                ],
                 projects=[
                     {
-                        "name": "Project 1",
-                        "description": "Description 1"
+                        "name": "LinkedIn Job Application Agent",
+                        "description": "AI Agent for LinkedIn Job Application"
                     },
                     {
                         "name": "Project 2",

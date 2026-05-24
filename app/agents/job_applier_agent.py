@@ -9,6 +9,7 @@ def job_applier_agent(state: JobApplicationState):
     print(" applying jobs...")
     processed_jobs = state.processed_jobs
     currrent_job = state.all_jobs[len(processed_jobs)]
+    print(currrent_job)
     processed_jobs.append(currrent_job)
     return {"processed_jobs": processed_jobs}
     
