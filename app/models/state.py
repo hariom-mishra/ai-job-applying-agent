@@ -4,13 +4,9 @@ from app.models.profile import Profile
 from app.models.job import Job
 from typing import List
 
-class JobApplicationState:
-    current_app: Literal["Linkedin", "Naukri", "Indeed"]
-    all_apps: List[str] = ["Linkedin", "Naukri", "Indeed"]
+class JobApplicationState(BaseModel):
     all_jobs: List[Job]
     filtered_jobs: List[Job]
     profile: Profile
     applied_jobs: List[str]
     resume: str
-    
-    

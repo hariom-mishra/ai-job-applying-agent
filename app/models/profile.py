@@ -1,4 +1,6 @@
-class Profile:
+from pydantic import BaseModel
+
+class Profile(BaseModel):
     name: str
     email: str
     phone: str
@@ -7,4 +9,5 @@ class Profile:
     experiences: list
     education: list
     projects: list    
-    
+    looking_for: str
+    location: str
